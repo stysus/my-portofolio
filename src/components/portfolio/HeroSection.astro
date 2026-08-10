@@ -1,0 +1,141 @@
+---
+import Container from '../layout/Container.astro';
+import Button from '../ui/Button.astro';
+---
+
+<section class="relative py-8 md:py-12 overflow-hidden">
+  <Container size="lg">
+    <!-- Hero Main Container Card -->
+    <div class="glass-panel p-6 md:p-10 rounded-[var(--radius-2xl)] border border-[var(--border-neon-primary)] shadow-[var(--shadow-neon-purple)] relative overflow-hidden">
+      
+      <!-- Background Ambient Glow Effects -->
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-[var(--primary-neon)]/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-[var(--secondary-neon)]/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        
+        <!-- Left Content (Text & Action Pills) -->
+        <div class="lg:col-span-7 flex flex-col items-start gap-5">
+          
+          <!-- Mode Indicator -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-[var(--radius-full)] bg-[var(--primary-neon)]/10 border border-[var(--primary-neon)]/30 font-mono text-xs text-[var(--primary-neon-bright)]">
+            <span class="w-2 h-2 rounded-full bg-[var(--accent-pink)] animate-ping"></span>
+            &gt; vibe.mode = true
+          </div>
+
+          <!-- Main Heading -->
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] text-white">
+            I code the vibe, <br class="hidden sm:inline" />
+            <span class="text-gradient-primary">AI handles the heavy.</span>
+          </h1>
+
+          <!-- Subtitle -->
+          <p class="text-sm sm:text-base text-[var(--text-secondary)] font-normal max-w-xl leading-relaxed">
+            Vibe coder building cool things with AI by my side. Turning complex ideas into sleek, automated, high-performance software.
+          </p>
+
+          <!-- Interactive Action Pills Row -->
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <!-- Pill 1: Build -->
+            <button 
+              id="pill-build"
+              class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold font-mono bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+            >
+              <span>Build</span>
+              <span class="text-pink-200 font-normal">&lt;/&gt;</span>
+            </button>
+
+            <!-- Pill 2: Automate -->
+            <button 
+              id="pill-automate"
+              class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold font-mono bg-[var(--surface-elevated)] border border-[var(--secondary-neon)]/40 text-[var(--secondary-neon-bright)] shadow-[0_0_15px_rgba(56,189,248,0.2)] hover:bg-[var(--secondary-neon)]/10 hover:border-[var(--secondary-neon)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+            >
+              <span>Automate</span>
+              <span>🤖</span>
+            </button>
+
+            <!-- Pill 3: Innovate -->
+            <button 
+              id="pill-innovate"
+              class="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold font-mono bg-[var(--primary-neon)]/15 border border-[var(--primary-neon)]/40 text-[var(--primary-neon-bright)] shadow-[0_0_15px_rgba(168,85,247,0.2)] hover:bg-[var(--primary-neon)]/25 hover:border-[var(--primary-neon)] hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer flex items-center gap-2"
+            >
+              <span>Innovate</span>
+              <span>👾</span>
+            </button>
+          </div>
+
+          <!-- Interactive Action Toast Output -->
+          <div id="action-toast" class="hidden font-mono text-xs px-3 py-1.5 rounded-[var(--radius-md)] bg-[var(--surface-base)] border border-[var(--border-default)] text-[var(--text-bright)] transition-all">
+            <span class="text-[var(--accent-green)]">&gt;</span> <span id="action-toast-text"></span>
+          </div>
+
+        </div>
+
+        <!-- Right Graphic / Image Art Container -->
+        <div class="lg:col-span-5 relative flex justify-center items-center">
+          <div class="relative w-full aspect-video sm:aspect-[4/3] rounded-[var(--radius-xl)] overflow-hidden border border-[var(--border-neon-primary)] shadow-2xl group">
+            
+            <img 
+              src="/hero-workspace.jpg" 
+              alt="Cyberpunk Vibe Coder Workspace" 
+              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+
+            <!-- Dark Overlay Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-80"></div>
+
+            <!-- Glowing Floating Rocket Badge -->
+            <div class="absolute top-4 left-4 p-3 rounded-[var(--radius-lg)] bg-[var(--bg-primary)]/80 backdrop-blur-md border border-[var(--border-neon-primary)] shadow-lg flex items-center gap-2 animate-bounce">
+              <span class="text-lg">🚀</span>
+              <div class="flex flex-col">
+                <span class="text-[10px] font-mono tracking-widest text-[var(--primary-neon-bright)] uppercase font-bold">SHIP BUILD REPEAT</span>
+                <span class="text-[9px] font-mono text-[var(--text-muted)]">Autonomous AI Cycle</span>
+              </div>
+            </div>
+
+            <!-- Glowing Neon Sign Overlay -->
+            <div class="absolute bottom-4 right-4 p-3.5 rounded-[var(--radius-lg)] bg-[var(--bg-primary)]/90 backdrop-blur-md border border-[var(--accent-pink)]/50 shadow-[0_0_20px_rgba(236,72,153,0.3)]">
+              <div class="font-mono text-xs font-bold text-[var(--accent-pink-glow)] flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-[var(--accent-pink)] animate-ping"></span>
+                // execute ideas. not just code.
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </Container>
+</section>
+
+<script>
+  // Interactive Pill Button Handlers
+  const pillBuild = document.getElementById('pill-build');
+  const pillAutomate = document.getElementById('pill-automate');
+  const pillInnovate = document.getElementById('pill-innovate');
+  const toast = document.getElementById('action-toast');
+  const toastText = document.getElementById('action-toast-text');
+
+  function showToast(msg: string) {
+    if (toast && toastText) {
+      toastText.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 4000);
+    }
+  }
+
+  pillBuild?.addEventListener('click', () => {
+    showToast('Vibe Mode Active: Generating clean Astro + Tailwind components...');
+  });
+
+  pillAutomate?.addEventListener('click', () => {
+    showToast('Automation Agent: Auto-commits, PRs & deployments enabled 🤖');
+  });
+
+  pillInnovate?.addEventListener('click', () => {
+    showToast('AI Lab: Experimenting with next-gen web frameworks 👾');
+  });
+</script>

@@ -1,0 +1,97 @@
+---
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+import { fetchGithubData } from '../../utils/github';
+
+const stats = await fetchGithubData();
+const commits = stats.recentCommits.slice(0, 5);
+---
+
+<Card variant="glass" class="p-6 border border-[var(--border-neon-secondary)] shadow-[var(--shadow-neon-cyan)]">
+  <!-- Card Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-[var(--border-subtle)] mb-5 gap-3">
+    <div class="flex items-center gap-3">
+      <span class="p-2.5 rounded-xl bg-[var(--secondary-neon)]/15 text-[var(--secondary-neon-bright)] text-base border border-[var(--secondary-neon)]/30">
+        ⚡
+      </span>
+      <div>
+        <h3 class="text-sm font-bold text-white font-mono uppercase tracking-wider flex items-center gap-2">
+          RECENT ACTIVITY FEED
+        </h3>
+        <a 
+          href={stats.profileUrl} 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="text-xs font-mono text-[var(--secondary-neon)] hover:underline block"
+        >
+          @{stats.username}
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick Stats & Badge -->
+    <div class="flex items-center gap-3 font-mono text-xs">
+      <div class="hidden md:flex items-center gap-4 px-3 py-1.5 rounded-lg bg-[var(--surface-elevated)] border border-[var(--border-subtle)]">
+        <span><strong class="text-white">{stats.publicRepos}</strong> <span class="text-[var(--text-muted)] text-[10px]">Repos</span></span>
+        <span><strong class="text-[var(--primary-neon-bright)]">{stats.starsCount}</strong> <span class="text-[var(--text-muted)] text-[10px]">Stars</span></span>
+        <span><strong class="text-[var(--accent-green)]">{stats.followers}</strong> <span class="text-[var(--text-muted)] text-[10px]">Followers</span></span>
+      </div>
+
+      <Badge variant={stats.isRealData ? "secondary" : "outline"} size="sm">
+        {stats.isRealData ? "Live API" : "Simulated"}
+      </Badge>
+    </div>
+  </div>
+
+  <!-- Numbered List (1 to 5) -->
+  <div class="flex flex-col gap-3 font-mono">
+    {commits.map((commit, index) => (
+      <a 
+        href={commit.url || `https://github.com/${stats.username}/${commit.repo}`} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        class={`group relative p-4 rounded-xl border transition-all duration-200 flex items-start gap-4 cursor-pointer ${
+          index === 0
+            ? 'bg-[var(--surface-elevated)] border-[var(--primary-neon)]/60 shadow-[0_0_16px_rgba(168,85,247,0.18)]'
+            : 'bg-[var(--bg-primary)] border-[var(--border-subtle)] hover:border-[var(--secondary-neon)]/50 hover:bg-[var(--surface-elevated)]/60'
+        }`}
+      >
+        <!-- Number Badge (1, 2, 3, 4, 5) -->
+        <div class={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 border ${
+          index === 0 
+            ? 'bg-[var(--primary-neon)]/20 text-[var(--primary-neon-bright)] border-[var(--primary-neon)]/50' 
+            : 'bg-[var(--surface-elevated)] text-[var(--text-muted)] border-[var(--border-subtle)] group-hover:text-[var(--secondary-neon-bright)] group-hover:border-[var(--secondary-neon)]/40'
+        }`}>
+          {index + 1}
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 min-w-0 flex flex-col gap-1">
+          <div class="flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2 truncate">
+              <span class="text-[var(--secondary-neon-bright)] font-semibold truncate">{commit.repo}</span>
+              {index === 0 && (
+                <span class="px-1.5 py-0.5 rounded bg-[var(--primary-neon)] text-[9px] font-bold text-white uppercase tracking-wider animate-pulse">
+                  Latest
+                </span>
+              )}
+            </div>
+            <span class="text-[10px] text-[var(--text-muted)] flex-shrink-0 ml-2">{commit.time}</span>
+          </div>
+
+          <p class="text-xs text-[var(--text-secondary)] group-hover:text-white transition-colors truncate">
+            {commit.message}
+          </p>
+
+          <div class="flex items-center gap-2 text-[10px] text-[var(--text-muted)] pt-1 mt-0.5 border-t border-[var(--border-subtle)]/40">
+            <span class="text-[var(--primary-neon)]">commit</span>
+            <code class="text-[var(--primary-neon-bright)]">{commit.sha}</code>
+            <span class="ml-auto text-[var(--secondary-neon)] opacity-0 group-hover:opacity-100 transition-opacity">
+              View on GitHub ↗
+            </span>
+          </div>
+        </div>
+      </a>
+    ))}
+  </div>
+</Card>

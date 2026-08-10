@@ -1,0 +1,138 @@
+---
+import Card from '../ui/Card.astro';
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
+---
+
+<section class="py-6">
+  <Card variant="glow" class="relative overflow-hidden border border-[var(--border-neon-primary)]">
+    <!-- Top Terminal Bar -->
+    <div class="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)] mb-4">
+      <div class="flex items-center gap-2">
+        <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
+        <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+        <span class="ml-2 font-mono text-xs text-[var(--primary-neon-bright)]">vibe-assistant --interactive-mode</span>
+      </div>
+      <Badge variant="secondary" size="sm">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--secondary-neon)] animate-ping"></span>
+        Online
+      </Badge>
+    </div>
+
+    <!-- AI Output Conversation Area -->
+    <div id="ai-chat-window" class="min-h-[160px] max-h-[260px] overflow-y-auto p-4 rounded-[var(--radius-lg)] bg-[var(--bg-primary)]/80 border border-[var(--border-subtle)] font-mono text-xs flex flex-col gap-3 mb-4">
+      
+      <!-- System Message -->
+      <div class="flex items-start gap-2.5 text-[var(--text-secondary)]">
+        <span class="p-1 rounded bg-[var(--primary-neon)]/20 text-[var(--primary-neon-bright)] font-bold shrink-0">AI</span>
+        <div class="leading-relaxed">
+          Hello! I am <strong class="text-white">Vibe Coder Assistant</strong>. Ask me anything about my tech stack, projects, or vibe coding philosophy!
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Prompt Suggestions -->
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <span class="text-[10px] font-mono text-[var(--text-muted)]">Quick Prompts:</span>
+      <button class="quick-prompt-btn text-[11px] font-mono px-2.5 py-1 rounded-full bg-[var(--surface-elevated)] hover:bg-[var(--primary-neon)]/20 text-[var(--text-secondary)] hover:text-white border border-[var(--border-subtle)] transition-all">
+        "What tech stack do you use?"
+      </button>
+      <button class="quick-prompt-btn text-[11px] font-mono px-2.5 py-1 rounded-full bg-[var(--surface-elevated)] hover:bg-[var(--primary-neon)]/20 text-[var(--text-secondary)] hover:text-white border border-[var(--border-subtle)] transition-all">
+        "Tell me about AI Dev Assistant"
+      </button>
+      <button class="quick-prompt-btn text-[11px] font-mono px-2.5 py-1 rounded-full bg-[var(--surface-elevated)] hover:bg-[var(--primary-neon)]/20 text-[var(--text-secondary)] hover:text-white border border-[var(--border-subtle)] transition-all">
+        "Give me a coding quote"
+      </button>
+    </div>
+
+    <!-- Input Form -->
+    <form id="ai-prompt-form" class="flex items-center gap-2">
+      <div class="relative flex-grow">
+        <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-xs text-[var(--primary-neon)]">&gt;</span>
+        <input 
+          type="text" 
+          id="ai-prompt-input"
+          placeholder="Ask AI Assistant something..."
+          class="w-full pl-8 pr-4 py-2.5 rounded-[var(--radius-lg)] bg-[var(--bg-primary)] border border-[var(--border-default)] focus:border-[var(--primary-neon)] focus:outline-none text-xs font-mono text-white placeholder-[var(--text-muted)] transition-all"
+        />
+      </div>
+      <Button variant="primary" size="md" type="submit" id="ai-submit-btn">
+        <span>Send</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </Button>
+    </form>
+  </Card>
+</section>
+
+<script>
+  const form = document.getElementById('ai-prompt-form');
+  const input = document.getElementById('ai-prompt-input') as HTMLInputElement;
+  const chatWindow = document.getElementById('ai-chat-window');
+  const quickBtns = document.querySelectorAll('.quick-prompt-btn');
+
+  const responses: Record<string, string> = {
+    "what tech stack do you use?": "I primary build with Python (90%), TypeScript (80%), Rust (70%), Go (60%), and Bash scripts (85%), using Astro 5, Tailwind CSS, and AI agents!",
+    "tell me about ai dev assistant": "AI Dev Assistant is my flagship CLI tool built with Python. It automates repetitive coding tasks, generates commit messages, and explains complex code snippets using AI.",
+    "give me a coding quote": "“I code the vibe, AI handles the heavy. Prompt the idea, trust the process, ship the vibe!” ⚡",
+  };
+
+  function appendMessage(sender: 'USER' | 'AI', text: string) {
+    if (!chatWindow) return;
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'flex items-start gap-2.5 text-[var(--text-secondary)]';
+
+    if (sender === 'USER') {
+      msgDiv.innerHTML = `
+        <span class="p-1 rounded bg-[var(--secondary-neon)]/20 text-[var(--secondary-neon-bright)] font-bold shrink-0">YOU</span>
+        <div class="leading-relaxed text-white">${text}</div>
+      `;
+    } else {
+      msgDiv.innerHTML = `
+        <span class="p-1 rounded bg-[var(--primary-neon)]/20 text-[var(--primary-neon-bright)] font-bold shrink-0">AI</span>
+        <div class="leading-relaxed text-[var(--primary-neon-bright)]">${text}</div>
+      `;
+    }
+
+    chatWindow.appendChild(msgDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  function handlePrompt(promptText: string) {
+    if (!promptText.trim()) return;
+
+    appendMessage('USER', promptText);
+
+    const clean = promptText.toLowerCase().trim();
+    let reply = "That's awesome! Let's build something awesome with AI and clean code. Check out my featured projects above!";
+
+    for (const key in responses) {
+      if (clean.includes(key)) {
+        reply = responses[key];
+        break;
+      }
+    }
+
+    setTimeout(() => {
+      appendMessage('AI', reply);
+    }, 400);
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (input && input.value) {
+      handlePrompt(input.value);
+      input.value = '';
+    }
+  });
+
+  quickBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const q = btn.textContent?.replace(/"/g, '').trim();
+      if (q) {
+        handlePrompt(q);
+      }
+    });
+  });
+</script>

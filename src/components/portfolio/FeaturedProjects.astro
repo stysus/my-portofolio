@@ -1,0 +1,231 @@
+---
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+import { fetchGithubData } from '../../utils/github';
+
+const stats = await fetchGithubData();
+const username = stats.username || 'stysus';
+const allRepos = stats.userRepos || [];
+const pinnedRepos = stats.pinnedRepos && stats.pinnedRepos.length > 0 ? stats.pinnedRepos : allRepos.slice(0, 4);
+
+// Tech & Language Icon Map
+const langIconMap: Record<string, { icon: string; bg: string }> = {
+  'C++': { icon: '⚙️', bg: 'bg-gradient-to-br from-blue-600 to-indigo-900' },
+  'C': { icon: '⚙️', bg: 'bg-gradient-to-br from-blue-600 to-indigo-900' },
+  'Python': { icon: '🐍', bg: 'bg-gradient-to-br from-blue-600 to-indigo-900' },
+  'TypeScript': { icon: '⚡', bg: 'bg-gradient-to-br from-teal-600 to-emerald-900' },
+  'JavaScript': { icon: '🟨', bg: 'bg-gradient-to-br from-amber-600 to-yellow-900' },
+  'Rust': { icon: '🦀', bg: 'bg-gradient-to-br from-purple-600 to-pink-900' },
+  'Go': { icon: '🐹', bg: 'bg-gradient-to-br from-teal-600 to-cyan-900' },
+  'Shell': { icon: '🐚', bg: 'bg-gradient-to-br from-emerald-600 to-green-900' },
+  'HTML': { icon: '🌐', bg: 'bg-gradient-to-br from-orange-600 to-red-900' },
+};
+
+const DEFAULT_ICON = { icon: '📦', bg: 'bg-gradient-to-br from-indigo-600 to-purple-900' };
+---
+
+<div class="flex flex-col gap-4 h-full">
+  <!-- Header Title Row & Simplified Filter Tabs -->
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0">
+    <h2 class="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2 font-mono shrink-0">
+      <span class="text-lg">🚀</span>
+      <span class="text-gradient-primary">PROJECT SHOWCASE</span>
+    </h2>
+
+    <!-- Clean 2-Tab Filter: Featured (Pinned) vs Repository List -->
+    <div class="flex items-center gap-1.5 p-1 rounded-[var(--radius-lg)] bg-[var(--surface-elevated)] border border-[var(--border-subtle)] font-mono text-xs overflow-x-auto no-scrollbar">
+      <button 
+        class="tab-filter-btn px-3.5 py-1.5 rounded-[var(--radius-md)] bg-[var(--primary-neon)] text-white font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0" 
+        data-target="tab-featured"
+      >
+        <span class="whitespace-nowrap">📌 Featured</span>
+        <span class="text-[10px] opacity-90 font-mono">({pinnedRepos.length})</span>
+      </button>
+
+      <button 
+        class="tab-filter-btn px-3.5 py-1.5 rounded-[var(--radius-md)] text-[var(--text-secondary)] hover:text-white transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0" 
+        data-target="tab-all-repos"
+      >
+        <span class="whitespace-nowrap">📦 Repository List</span>
+        <span class="text-[10px] font-bold text-[var(--secondary-neon-bright)] font-mono">({allRepos.length})</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Shared Tab View Area (Fills Available Height Driven by Profile Card Baseline) -->
+  <div class="flex-1 min-h-0 relative overflow-hidden">
+    <!-- TAB 1: Featured / Pinned Repositories Grid -->
+    <div id="tab-featured" class="h-full grid grid-cols-1 sm:grid-cols-2 gap-4 grid-rows-2">
+      {pinnedRepos.map((repo) => {
+        const iconMeta = langIconMap[repo.language] || DEFAULT_ICON;
+        return (
+          <div 
+            class="project-card group relative p-4 rounded-[var(--radius-xl)] bg-[var(--surface-glass)] backdrop-blur-md border border-[var(--border-subtle)] hover:border-[var(--primary-neon)]/50 hover:shadow-[0_0_20px_rgba(168,85,247,0.18)] transition-all duration-300 ease-out flex flex-col justify-between cursor-pointer h-full min-h-0"
+            data-id={repo.name}
+          >
+            <div>
+              <!-- Top Row: Tech Icon + Pinned Badge + External Link -->
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <div class:list={['w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-md border border-white/10 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300', iconMeta.bg]}>
+                    {iconMeta.icon}
+                  </div>
+                  <span class="px-1.5 py-0.5 rounded-md bg-[var(--primary-neon)]/10 text-[9px] font-mono font-semibold text-[var(--primary-neon-bright)] border border-[var(--primary-neon)]/25 uppercase tracking-wider leading-none">
+                    Pinned
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[9px] font-mono text-[var(--secondary-neon)] opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                    Case Study ➔
+                  </span>
+
+                  <a 
+                    href={repo.url || `https://github.com/${username}/${repo.name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="p-1.5 rounded-lg bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-[var(--secondary-neon-bright)] hover:bg-[var(--secondary-neon)]/10 border border-[var(--border-subtle)] transition-all duration-200"
+                    aria-label={`View ${repo.name} on GitHub`}
+                    title="View on GitHub"
+                  >
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+
+              <!-- Project Title -->
+              <h3 class="text-[13px] font-bold text-white group-hover:text-[var(--primary-neon-bright)] transition-colors duration-200 mb-1.5 font-mono leading-snug tracking-tight">
+                {repo.name}
+              </h3>
+
+              <!-- Project Description -->
+              <p class="text-[11px] text-[var(--text-secondary)] leading-relaxed line-clamp-2 mb-3">
+                {repo.description}
+              </p>
+            </div>
+
+            <!-- Bottom Tech Tag & Stars -->
+            <div class="flex items-center justify-between pt-2.5 border-t border-[var(--border-subtle)]/60 text-[11px] font-mono mt-auto">
+              <div class="flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-[var(--secondary-neon-bright)] shrink-0"></span>
+                <span class="text-white/90 font-medium">{repo.language}</span>
+              </div>
+
+              <div class="flex items-center gap-2.5 text-[var(--text-muted)] group-hover:text-white/70 transition-colors duration-200">
+                <span class="flex items-center gap-1 text-amber-400/90 font-semibold">
+                  ★ {repo.stars}
+                </span>
+                <span class="text-[9px] opacity-70">{repo.updated}</span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- TAB 2: Repository Vertical List Layout (Fills 100% Container Height with Clean Internal Scroll) -->
+    <div 
+      id="tab-all-repos" 
+      class="hidden h-full flex flex-col gap-2.5 font-mono overflow-y-auto pr-1 no-scrollbar"
+    >
+      {allRepos.map((repo, index) => {
+        const iconMeta = langIconMap[repo.language] || DEFAULT_ICON;
+        return (
+          <a 
+            href={repo.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="group p-3.5 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-subtle)] hover:border-[var(--secondary-neon-bright)]/60 hover:bg-[var(--surface-elevated)]/80 transition-all flex items-start gap-3.5 cursor-pointer block shrink-0"
+          >
+            <!-- Numbered Badge (1, 2, 3, ...) -->
+            <div class="w-7 h-7 rounded-lg bg-[var(--surface-elevated)] border border-[var(--border-subtle)] text-[var(--secondary-neon-bright)] flex items-center justify-center font-mono font-bold text-xs shrink-0 group-hover:border-[var(--secondary-neon)]/50 group-hover:bg-[var(--secondary-neon)]/10">
+              {index + 1}
+            </div>
+
+            <!-- Content Row -->
+            <div class="flex-1 min-w-0 flex flex-col gap-0.5">
+              <div class="flex items-center justify-between text-xs">
+                <div class="flex items-center gap-2 truncate">
+                  <span class="text-sm shrink-0">{iconMeta.icon}</span>
+                  <span class="text-white font-bold font-mono group-hover:text-[var(--secondary-neon-bright)] transition-colors truncate">
+                    {repo.name}
+                  </span>
+                  <span class="px-2 py-0.2 rounded bg-[var(--surface-elevated)] text-[10px] font-mono text-[var(--secondary-neon)] border border-[var(--border-subtle)]">
+                    {repo.language}
+                  </span>
+                </div>
+                <span class="text-[10px] font-mono text-[var(--text-muted)] shrink-0 ml-2">{repo.updated}</span>
+              </div>
+
+              <p class="text-[11px] text-[var(--text-secondary)] font-mono leading-relaxed truncate">
+                {repo.description}
+              </p>
+
+              <div class="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)] pt-1 mt-0.5 border-t border-[var(--border-subtle)]/40">
+                <div class="flex items-center gap-3">
+                  <span class="text-amber-400 font-semibold flex items-center gap-1">
+                    ★ {repo.stars} Stars
+                  </span>
+                  <span class="flex items-center gap-1">
+                    🍴 {repo.forks} Forks
+                  </span>
+                </div>
+
+                <span class="text-[var(--secondary-neon)] opacity-0 group-hover:opacity-100 transition-opacity">
+                  View ↗
+                </span>
+              </div>
+            </div>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Custom hidden scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>
+
+<script>
+  // Tab Switching Logic: Featured (Pinned) vs Repository List (Vertical List View)
+  const tabBtns = document.querySelectorAll('.tab-filter-btn');
+  const tabFeatured = document.getElementById('tab-featured');
+  const tabAllRepos = document.getElementById('tab-all-repos');
+
+  tabBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+
+      tabBtns.forEach((b) => {
+        b.classList.remove('bg-[var(--primary-neon)]', 'text-white', 'font-semibold');
+        b.classList.add('text-[var(--text-secondary)]');
+      });
+
+      btn.classList.add('bg-[var(--primary-neon)]', 'text-white', 'font-semibold');
+      btn.classList.remove('text-[var(--text-secondary)]');
+
+      if (target === 'tab-all-repos') {
+        if (tabFeatured) tabFeatured.classList.add('hidden');
+        if (tabAllRepos) tabAllRepos.classList.remove('hidden');
+      } else {
+        if (tabFeatured) tabFeatured.classList.remove('hidden');
+        if (tabAllRepos) tabAllRepos.classList.add('hidden');
+      }
+
+      // Re-trigger height sync if window function exists
+      if (typeof (window as any).syncDashboardHeight === 'function') {
+        (window as any).syncDashboardHeight();
+      }
+    });
+  });
+</script>

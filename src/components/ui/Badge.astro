@@ -1,0 +1,25 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'accent' | 'muted';
+  size?: 'sm' | 'md';
+  class?: string;
+}
+
+const { variant = 'primary', size = 'md', class: className = '' } = Astro.props;
+
+const variantStyles = {
+  primary: 'bg-[var(--primary-neon)]/10 text-[var(--primary-neon-bright)] border border-[var(--primary-neon)]/30',
+  secondary: 'bg-[var(--secondary-neon)]/10 text-[var(--secondary-neon-bright)] border border-[var(--secondary-neon)]/30',
+  accent: 'bg-[var(--accent-pink)]/10 text-[var(--accent-pink)] border border-[var(--accent-pink)]/30',
+  muted: 'bg-[var(--surface-hover)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
+};
+
+const sizeStyles = {
+  sm: 'px-2.5 py-0.5 text-xs font-mono',
+  md: 'px-3 py-1 text-xs font-mono font-medium'
+};
+---
+
+<span class:list={['inline-flex items-center gap-1.5 rounded-[var(--radius-full)] backdrop-blur-sm transition-colors', variantStyles[variant], sizeStyles[size], className]}>
+  <slot />
+</span>

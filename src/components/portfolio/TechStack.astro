@@ -1,0 +1,171 @@
+---
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+import { fetchGithubData } from '../../utils/github';
+
+const stats = await fetchGithubData();
+const langsMap = stats.languagesPercentage || {};
+
+// Comprehensive Icon & Color Map for any programming language detected on GitHub
+const LANG_CONFIG: Record<string, { icon: string; color: string; glow: string }> = {
+  'Python': { icon: '🐍', color: 'from-blue-500 to-indigo-600', glow: 'shadow-[0_0_12px_rgba(59,130,246,0.5)]' },
+  'TypeScript': { icon: '⚡', color: 'from-cyan-400 to-blue-500', glow: 'shadow-[0_0_12px_rgba(56,189,248,0.5)]' },
+  'JavaScript': { icon: '🟨', color: 'from-yellow-400 to-amber-500', glow: 'shadow-[0_0_12px_rgba(251,191,36,0.5)]' },
+  'HTML': { icon: '🌐', color: 'from-orange-500 to-rose-600', glow: 'shadow-[0_0_12px_rgba(249,115,22,0.5)]' },
+  'CSS': { icon: '🎨', color: 'from-blue-400 to-cyan-500', glow: 'shadow-[0_0_12px_rgba(96,165,250,0.5)]' },
+  'SCSS': { icon: '💖', color: 'from-pink-500 to-rose-500', glow: 'shadow-[0_0_12px_rgba(236,72,153,0.5)]' },
+  'Rust': { icon: '🦀', color: 'from-amber-500 to-rose-600', glow: 'shadow-[0_0_12px_rgba(244,63,94,0.5)]' },
+  'Go': { icon: '🐹', color: 'from-teal-400 to-cyan-500', glow: 'shadow-[0_0_12px_rgba(45,212,191,0.5)]' },
+  'Shell': { icon: '🐚', color: 'from-emerald-400 to-green-600', glow: 'shadow-[0_0_12px_rgba(74,222,128,0.5)]' },
+  'Bash': { icon: '🐚', color: 'from-emerald-400 to-green-600', glow: 'shadow-[0_0_12px_rgba(74,222,128,0.5)]' },
+  'C++': { icon: '⚙️', color: 'from-blue-600 to-indigo-700', glow: 'shadow-[0_0_12px_rgba(37,99,235,0.5)]' },
+  'C': { icon: '⚙️', color: 'from-slate-400 to-blue-600', glow: 'shadow-[0_0_12px_rgba(148,163,184,0.5)]' },
+  'C#': { icon: '💜', color: 'from-purple-500 to-indigo-600', glow: 'shadow-[0_0_12px_rgba(168,85,247,0.5)]' },
+  'Java': { icon: '☕', color: 'from-red-500 to-amber-600', glow: 'shadow-[0_0_12px_rgba(239,68,68,0.5)]' },
+  'PHP': { icon: '🐘', color: 'from-indigo-400 to-purple-600', glow: 'shadow-[0_0_12px_rgba(129,140,248,0.5)]' },
+  'Ruby': { icon: '💎', color: 'from-rose-500 to-red-600', glow: 'shadow-[0_0_12px_rgba(244,63,94,0.5)]' },
+  'Kotlin': { icon: '🟪', color: 'from-purple-400 to-indigo-500', glow: 'shadow-[0_0_12px_rgba(192,132,252,0.5)]' },
+  'Swift': { icon: '🟧', color: 'from-orange-400 to-amber-500', glow: 'shadow-[0_0_12px_rgba(251,146,60,0.5)]' },
+  'Dart': { icon: '🎯', color: 'from-cyan-500 to-blue-600', glow: 'shadow-[0_0_12px_rgba(6,182,212,0.5)]' },
+  'Vue': { icon: '💚', color: 'from-emerald-400 to-teal-500', glow: 'shadow-[0_0_12px_rgba(52,211,153,0.5)]' },
+  'Astro': { icon: '🚀', color: 'from-purple-500 to-pink-500', glow: 'shadow-[0_0_12px_rgba(168,85,247,0.5)]' },
+  'Svelte': { icon: '🔥', color: 'from-orange-500 to-red-600', glow: 'shadow-[0_0_12px_rgba(249,115,22,0.5)]' },
+  'Jupyter Notebook': { icon: '🪐', color: 'from-amber-500 to-orange-600', glow: 'shadow-[0_0_12px_rgba(245,158,11,0.5)]' },
+  'Docker': { icon: '📦', color: 'from-blue-400 to-cyan-600', glow: 'shadow-[0_0_12px_rgba(56,189,248,0.5)]' },
+  'SQL': { icon: '🗄️', color: 'from-blue-400 to-indigo-500', glow: 'shadow-[0_0_12px_rgba(56,189,248,0.5)]' },
+  'React': { icon: '⚛️', color: 'from-cyan-400 to-blue-500', glow: 'shadow-[0_0_12px_rgba(56,189,248,0.5)]' },
+  'Lua': { icon: '🌙', color: 'from-indigo-400 to-blue-600', glow: 'shadow-[0_0_12px_rgba(99,102,241,0.5)]' },
+  'R': { icon: '📊', color: 'from-blue-500 to-teal-500', glow: 'shadow-[0_0_12px_rgba(59,130,246,0.5)]' },
+  'Scala': { icon: '🔴', color: 'from-red-500 to-rose-600', glow: 'shadow-[0_0_12px_rgba(239,68,68,0.5)]' },
+  'Elixir': { icon: '💧', color: 'from-purple-500 to-pink-600', glow: 'shadow-[0_0_12px_rgba(168,85,247,0.5)]' },
+  'Zig': { icon: '⚡', color: 'from-amber-400 to-yellow-500', glow: 'shadow-[0_0_12px_rgba(251,191,36,0.5)]' }
+};
+
+const DEFAULT_CONFIG = { icon: '💻', color: 'from-cyan-400 to-indigo-500', glow: 'shadow-[0_0_12px_rgba(56,189,248,0.5)]' };
+
+// 1. Get all languages with > 0% from GitHub API
+const detectedLanguages = Object.entries(langsMap)
+  .filter(([_, pct]) => pct > 0)
+  .map(([lang, pct]) => {
+    const config = LANG_CONFIG[lang] || DEFAULT_CONFIG;
+    return {
+      name: lang,
+      icon: config.icon,
+      color: config.color,
+      glow: config.glow,
+      percentage: pct
+    };
+  })
+  .sort((a, b) => b.percentage - a.percentage);
+
+// 2. Comprehensive Popular Programming Languages & Core Tech Stack List
+const extraSkillsList = [
+  { name: 'JavaScript', apiKey: 'JavaScript' },
+  { name: 'HTML5 / CSS3', apiKey: 'HTML' },
+  { name: 'C#', apiKey: 'C#' },
+  { name: 'Java', apiKey: 'Java' },
+  { name: 'Rust', apiKey: 'Rust' },
+  { name: 'PHP', apiKey: 'PHP' },
+  { name: 'Ruby', apiKey: 'Ruby' },
+  { name: 'Kotlin', apiKey: 'Kotlin' },
+  { name: 'Swift', apiKey: 'Swift' },
+  { name: 'Dart / Flutter', apiKey: 'Dart' },
+  { name: 'Shell / Bash', apiKey: 'Shell' },
+  { name: 'SQL / Databases', apiKey: 'SQL' },
+  { name: 'Astro Framework', apiKey: 'Astro' },
+  { name: 'React', apiKey: 'React' },
+  { name: 'Vue.js', apiKey: 'Vue' },
+  { name: 'Svelte', apiKey: 'Svelte' },
+  { name: 'Lua', apiKey: 'Lua' },
+  { name: 'Docker / DevOps', apiKey: 'Docker' },
+];
+
+const detectedNames = detectedLanguages.map(l => l.name);
+
+const extraSkills = extraSkillsList
+  .filter(s => !detectedNames.includes(s.apiKey) && !detectedNames.includes(s.name))
+  .map(s => {
+    const config = LANG_CONFIG[s.apiKey] || LANG_CONFIG[s.name] || DEFAULT_CONFIG;
+    return {
+      name: s.name,
+      icon: config.icon,
+      color: config.color,
+      glow: config.glow,
+      percentage: 0
+    };
+  });
+
+// Combine active auto-detected languages first, followed by remaining popular programming languages
+const skills = [...detectedLanguages, ...extraSkills];
+---
+
+<div class="h-full">
+  <!-- Tech Stack Main Card -->
+  <Card variant="glass" class="p-4 flex flex-col overflow-hidden border border-[var(--border-neon-secondary)] shadow-[var(--shadow-neon-cyan)] h-full">
+    
+    <!-- Title & Auto Sync Indicator -->
+    <div class="flex items-center justify-between pb-2.5 border-b border-[var(--border-subtle)]/60 gap-3 shrink-0 mb-2.5">
+      <h2 class="text-[10px] font-bold text-white uppercase tracking-widest font-mono flex items-center gap-1.5 shrink-0 leading-none">
+        <span class="text-[var(--secondary-neon-bright)] text-xs">&lt;/&gt;</span>
+        <span>TECH STACK</span>
+      </h2>
+      <span class={`shrink-0 inline-flex items-center px-2 py-0.5 rounded-full text-[8px] font-mono font-semibold uppercase tracking-wider leading-none whitespace-nowrap backdrop-blur-sm ${
+        stats.isRealData 
+          ? 'bg-[var(--secondary-neon)]/10 text-[var(--secondary-neon-bright)] border border-[var(--secondary-neon)]/25' 
+          : 'bg-[var(--surface-hover)] text-[var(--text-secondary)] border border-[var(--border-subtle)]'
+      }`}>
+        <span class={`w-1 h-1 rounded-full mr-1 ${stats.isRealData ? 'bg-[var(--secondary-neon-bright)] animate-pulse' : 'bg-[var(--text-muted)]'}`}></span>
+        {stats.isRealData ? "Auto-Sync" : "Demo"}
+      </span>
+    </div>
+
+    <!-- Skill Progress Bars Container -->
+    <div class="flex flex-col gap-2.5 flex-1 min-h-0 overflow-y-auto pr-0.5 no-scrollbar">
+      {skills.map((skill) => (
+        <div class="flex flex-col gap-1 group shrink-0">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <span class="w-5 h-5 rounded flex items-center justify-center bg-[var(--surface-elevated)] border border-[var(--border-subtle)] text-[10px] shrink-0 leading-none">
+                {skill.icon}
+              </span>
+              <span class={`font-mono font-medium text-[11px] leading-none transition-colors duration-200 truncate ${skill.percentage > 0 ? 'text-white/90 group-hover:text-[var(--secondary-neon-bright)]' : 'text-[var(--text-muted)]/70'}`}>
+                {skill.name}
+              </span>
+            </div>
+
+            <span class={`font-mono text-[10px] leading-none px-1.5 py-0.5 rounded-md shrink-0 ml-2 tabular-nums ${
+              skill.percentage > 0 
+                ? 'text-[var(--secondary-neon-bright)] font-bold bg-[var(--secondary-neon)]/8 border border-[var(--secondary-neon)]/20' 
+                : 'text-[var(--text-muted)]/50 bg-[var(--surface-elevated)]/50 border border-[var(--border-subtle)]/40'
+            }`}>
+              {skill.percentage}%
+            </span>
+          </div>
+
+          <!-- Progress Bar Track -->
+          <div class="w-full h-1.5 rounded-full bg-[var(--bg-primary)] border border-[var(--border-subtle)]/40 overflow-hidden">
+            {skill.percentage > 0 ? (
+              <div 
+                class:list={['h-full rounded-full bg-gradient-to-r transition-all duration-1000 ease-out', skill.color, skill.glow]}
+                style={`width: ${skill.percentage}%`}
+              ></div>
+            ) : (
+              <div class="h-full w-full bg-[var(--border-subtle)]/15 rounded-full"></div>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </Card>
+</div>
+
+<style>
+  /* Custom hidden scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+</style>

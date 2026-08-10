@@ -1,0 +1,40 @@
+---
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+
+const tools = [
+  { name: 'ChatGPT', icon: '🤖', category: 'AI Engine' },
+  { name: 'Claude', icon: '✦', category: 'AI Assistant' },
+  { name: 'Cursor', icon: '⚡', category: 'AI IDE' },
+  { name: 'Docker', icon: '📦', category: 'DevOps' },
+  { name: 'GitHub', icon: '🐙', category: 'CI/CD' },
+  { name: 'VS Code', icon: '💻', category: 'Editor' },
+  { name: 'Linux', icon: '>_', category: 'Environment' },
+  { name: 'CLI Agent', icon: '🛠️', category: 'Automation' },
+];
+---
+
+<Card variant="glass" class="p-6 flex flex-col gap-4 border border-[var(--border-neon-primary)] shadow-[var(--shadow-neon-purple)]">
+  <!-- Title Row -->
+  <div class="flex items-center justify-between pb-3 border-b border-[var(--border-subtle)]">
+    <h2 class="text-xs font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+      <span class="text-base">🤖</span>
+      <span class="text-gradient-primary">TOOLS & AI WORKFLOW SUITE</span>
+    </h2>
+    <span class="text-[10px] font-mono text-[var(--secondary-neon-bright)] font-semibold">8 Active Tools</span>
+  </div>
+
+  <!-- 8-Column Horizontal Tools Suite Grid -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
+    {tools.map((tool) => (
+      <div 
+        class="group relative flex flex-col items-center justify-center p-3 rounded-[var(--radius-lg)] bg-[var(--surface-elevated)]/90 border border-[var(--border-subtle)] hover:border-[var(--secondary-neon)]/60 hover:bg-[var(--secondary-neon)]/10 hover:scale-105 transition-all duration-200 cursor-pointer shadow-md"
+        title={`${tool.name} (${tool.category})`}
+      >
+        <span class="text-2xl mb-1.5 group-hover:scale-110 transition-transform">{tool.icon}</span>
+        <span class="text-xs font-mono font-bold text-white group-hover:text-[var(--secondary-neon-bright)] truncate w-full text-center mb-0.5">{tool.name}</span>
+        <span class="text-[9px] font-mono text-[var(--text-muted)] truncate w-full text-center">{tool.category}</span>
+      </div>
+    ))}
+  </div>
+</Card>

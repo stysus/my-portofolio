@@ -1,0 +1,48 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  class?: string;
+  id?: string;
+  [key: string]: any;
+}
+
+const { 
+  variant = 'primary', 
+  size = 'md', 
+  href, 
+  class: className = '', 
+  id,
+  ...rest 
+} = Astro.props;
+
+const variantStyles = {
+  primary: 'bg-gradient-to-r from-[var(--primary-neon)] to-[var(--accent-purple)] text-white hover:brightness-110 shadow-[var(--glow-primary)] border border-purple-400/30',
+  secondary: 'bg-gradient-to-r from-[var(--secondary-neon-dark)] to-[var(--secondary-neon)] text-white hover:brightness-110 shadow-[var(--glow-secondary)] border border-cyan-400/30',
+  outline: 'bg-[var(--surface-glass)] text-[var(--text-primary)] border border-[var(--border-default)] hover:border-[var(--primary-neon)] hover:text-[var(--primary-neon-bright)]',
+  ghost: 'text-[var(--text-secondary)] hover:text-[var(--text-bright)] hover:bg-[var(--surface-hover)]'
+};
+
+const sizeStyles = {
+  sm: 'px-3 py-1.5 text-xs font-mono',
+  md: 'px-5 py-2.5 text-sm font-sans font-semibold',
+  lg: 'px-6 py-3 text-base font-sans font-semibold'
+};
+
+const Element = href ? 'a' : 'button';
+---
+
+<Element
+  id={id}
+  href={href}
+  class:list={[
+    'inline-flex items-center justify-center gap-2 rounded-[var(--radius-lg)] font-medium transition-all duration-200 cursor-pointer active:scale-[0.98]',
+    variantStyles[variant],
+    sizeStyles[size],
+    className
+  ]}
+  {...rest}
+>
+  <slot />
+</Element>

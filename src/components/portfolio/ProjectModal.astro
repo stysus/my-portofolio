@@ -1,0 +1,287 @@
+---
+import Button from '../ui/Button.astro';
+import Badge from '../ui/Badge.astro';
+import { fetchGithubData } from '../../utils/github';
+
+const stats = await fetchGithubData();
+const username = stats.username || 'stysus';
+---
+
+<div id="project-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+  <!-- Modal Content Container -->
+  <div class="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-[var(--radius-2xl)] bg-[var(--bg-secondary)] border border-[var(--border-neon-primary)] shadow-[var(--shadow-neon-purple)] p-6 sm:p-8 flex flex-col gap-6 text-left">
+    
+    <!-- Top Close Button & Category -->
+    <div class="flex items-center justify-between pb-4 border-b border-[var(--border-subtle)]">
+      <div class="flex items-center gap-2">
+        <Badge variant="primary" id="modal-category">AI</Badge>
+        <span class="text-xs font-mono text-[var(--secondary-neon-bright)] font-bold" id="modal-language">Python</span>
+      </div>
+      
+      <button 
+        id="modal-close-btn"
+        class="p-2 rounded-lg bg-[var(--surface-elevated)] text-[var(--text-muted)] hover:text-white hover:bg-[var(--accent-pink)]/20 transition-all border border-[var(--border-subtle)] cursor-pointer"
+        aria-label="Close Modal"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Header & Title -->
+    <div>
+      <h3 id="modal-title" class="text-2xl sm:text-3xl font-black text-white tracking-tight mb-2">
+        AI Dev Assistant
+      </h3>
+      <p id="modal-tagline" class="text-sm text-[var(--text-secondary)] font-mono leading-relaxed">
+        CLI tool that helps me code, explain, and automate with AI.
+      </p>
+    </div>
+
+    <!-- Interactive Navigation Tabs inside Modal -->
+    <div class="flex items-center gap-2 border-b border-[var(--border-subtle)] pb-2 font-mono text-xs">
+      <button class="modal-tab-btn px-3 py-1.5 rounded-lg bg-[var(--primary-neon)] text-white font-semibold transition-all" data-tab="architecture">
+        🏗️ Architecture
+      </button>
+      <button class="modal-tab-btn px-3 py-1.5 rounded-lg text-[var(--text-secondary)] hover:text-white transition-all" data-tab="features">
+        ⚡ Features
+      </button>
+      <button class="modal-tab-btn px-3 py-1.5 rounded-lg text-[var(--text-secondary)] hover:text-white transition-all" data-tab="terminal">
+        💻 Terminal Quickstart
+      </button>
+    </div>
+
+    <!-- Tab 1: Architecture -->
+    <div id="tab-architecture" class="modal-tab-content flex flex-col gap-3">
+      <h4 class="text-xs font-mono font-bold text-[var(--secondary-neon-bright)] uppercase flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--secondary-neon)]"></span>
+        System Data Flow & Architecture
+      </h4>
+      <pre id="modal-architecture" class="font-mono text-[11px] text-[var(--text-secondary)] overflow-x-auto leading-relaxed bg-[var(--bg-primary)] p-4 rounded-xl border border-[var(--border-subtle)]">
+User Prompt ➔ CLI Parser ➔ LLM Router
+  └─ Streaming Tokens ➔ Terminal Output
+      </pre>
+    </div>
+
+    <!-- Tab 2: Key Features -->
+    <div id="tab-features" class="modal-tab-content hidden flex flex-col gap-3">
+      <h4 class="text-xs font-mono font-bold text-[var(--primary-neon-bright)] uppercase flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--primary-neon)]"></span>
+        Key Technical Highlights
+      </h4>
+      <ul id="modal-features" class="text-xs text-[var(--text-secondary)] space-y-2.5 font-mono p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-subtle)]">
+        <li class="flex items-center gap-2">✓ Automated Git Diff Summaries</li>
+        <li class="flex items-center gap-2">✓ Code Explanation & Refactoring</li>
+        <li class="flex items-center gap-2">✓ Streaming Terminal UI</li>
+      </ul>
+    </div>
+
+    <!-- Tab 3: Terminal Quickstart -->
+    <div id="tab-terminal" class="modal-tab-content hidden flex flex-col gap-3">
+      <h4 class="text-xs font-mono font-bold text-[var(--accent-green)] uppercase flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-[var(--accent-green)]"></span>
+        Terminal Quickstart & Command Run
+      </h4>
+      <div class="p-4 rounded-xl bg-[var(--surface-base)] border border-[var(--border-default)]">
+        <div class="flex items-center justify-between mb-2 text-xs font-mono text-[var(--text-muted)]">
+          <span>Command Line:</span>
+          <span>bash</span>
+        </div>
+        <pre id="modal-snippet" class="font-mono text-xs text-[var(--accent-green)] overflow-x-auto p-3 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-subtle)]">
+pip install ai-dev-assistant
+ai-dev init --key YOUR_API_KEY
+ai-dev explain src/main.py
+        </pre>
+      </div>
+    </div>
+
+    <!-- Bottom Action Buttons -->
+    <div class="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
+      <div class="flex items-center gap-1.5 text-xs font-mono text-[var(--text-muted)]">
+        <span class="text-amber-400">★</span>
+        <span id="modal-stars">840 Stars</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <Button variant="outline" size="sm" id="modal-github-link" href="#" target="_blank">
+          <span>View GitHub Repo</span>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </Button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Project Case Study Data Store
+  const currentUsername = document.querySelector('meta[name="username"]')?.getAttribute('content') || 'stysus';
+
+  const projectDetails: Record<string, any> = {
+    'ai-dev-assistant': {
+      title: 'AI Dev Assistant',
+      tagline: 'CLI tool that helps me code, explain, and automate with AI.',
+      category: 'AI / CLI',
+      language: 'Python',
+      stars: '840 Stars',
+      architecture: `User Input ➔ Typer CLI Parser ➔ OpenAI / Anthropic Provider
+  ├─ Git Staged Diff Analysis
+  └─ Rich Terminal Stream Render`,
+      features: [
+        '✓ Automated Git Diff Commit Summarization',
+        '✓ Real-Time Streaming Code Explanations',
+        '✓ Custom Agent Tooling Extensibility',
+        '✓ Lightweight Zero-Dependency Runner'
+      ],
+      snippet: `pip install ai-dev-assistant
+ai-dev init --key YOUR_API_KEY
+ai-dev explain src/main.py`,
+      link: `https://github.com/stysus/ai-dev-assistant`
+    },
+    'auto-commit-bot': {
+      title: 'Auto Commit Bot',
+      tagline: 'Automatic commit messages using AI summarization.',
+      category: 'AI / Git',
+      language: 'TypeScript',
+      stars: '520 Stars',
+      architecture: `git hook ➔ prepare-commit-msg ➔ Diff Extractor
+  └─ AI Summarizer ➔ Auto-inject Commit Message`,
+      features: [
+        '✓ Conventional Commit Format Auto-Formatting',
+        '✓ Git Hook Integration (\`prepare-commit-msg\`)',
+        '✓ Multi-file Diff Context Tokenizer',
+        '✓ Custom Prompt Template Customization'
+      ],
+      snippet: `npm i -g auto-commit-bot
+auto-commit hook install
+git commit -m "auto"`,
+      link: `https://github.com/stysus/auto-commit-bot`
+    },
+    'vibe-launchpad': {
+      title: 'Vibe Launchpad',
+      tagline: 'Boilerplate generator for quick project starters.',
+      category: 'CLI / Template',
+      language: 'Rust',
+      stars: '390 Stars',
+      architecture: `cargo run ➔ Interactive Template Picker ➔ Git Clone
+  └─ Config Ingestion ➔ Automated npm/cargo setup`,
+      features: [
+        '✓ Ultra-Fast Native Rust Executable',
+        '✓ Preset Templates for Astro, Next.js, & Rust',
+        '✓ Custom GitHub Repository Scaffolding',
+        '✓ Non-Interactive CI Mode Support'
+      ],
+      snippet: `cargo install vibe-launchpad
+vibe-launchpad init my-app --template astro-cyberpunk`,
+      link: `https://github.com/stysus/vibe-launchpad`
+    },
+    'smart-noted': {
+      title: 'Smart Noted',
+      tagline: 'AI-powered notes with summaries and tags.',
+      category: 'Web / AI',
+      language: 'Python',
+      stars: '290 Stars',
+      architecture: `Markdown Input ➔ Vector Embedding Engine ➔ SQLite Vector DB
+  └─ Semantic Search ➔ Auto Tagging Generator`,
+      features: [
+        '✓ Vector Embedding Semantic Search',
+        '✓ Auto-Generated Category Tags & Outlines',
+        '✓ Offline First Local SQLite Storage',
+        '✓ Full Markdown & LaTeX Support'
+      ],
+      snippet: `git clone https://github.com/stysus/smart-noted
+cd smart-noted && pip install -r requirements.txt
+python app.py`,
+      link: `https://github.com/stysus/smart-noted`
+    }
+  };
+
+  const modal = document.getElementById('project-modal');
+  const closeBtn = document.getElementById('modal-close-btn');
+
+  const modalTitle = document.getElementById('modal-title');
+  const modalTagline = document.getElementById('modal-tagline');
+  const modalCategory = document.getElementById('modal-category');
+  const modalLanguage = document.getElementById('modal-language');
+  const modalStars = document.getElementById('modal-stars');
+  const modalArchitecture = document.getElementById('modal-architecture');
+  const modalFeatures = document.getElementById('modal-features');
+  const modalSnippet = document.getElementById('modal-snippet');
+  const modalGithubLink = document.getElementById('modal-github-link') as HTMLAnchorElement;
+
+  const tabBtns = document.querySelectorAll('.modal-tab-btn');
+  const tabContents = document.querySelectorAll('.modal-tab-content');
+
+  // Tab switching logic inside modal
+  tabBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tabTarget = btn.getAttribute('data-tab');
+
+      tabBtns.forEach((b) => {
+        b.classList.remove('bg-[var(--primary-neon)]', 'text-white', 'font-semibold');
+        b.classList.add('text-[var(--text-secondary)]');
+      });
+
+      btn.classList.add('bg-[var(--primary-neon)]', 'text-white', 'font-semibold');
+      btn.classList.remove('text-[var(--text-secondary)]');
+
+      tabContents.forEach((content) => {
+        if (content.id === `tab-${tabTarget}`) {
+          content.classList.remove('hidden');
+        } else {
+          content.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  function openModal(projectId: string) {
+    const data = projectDetails[projectId] || projectDetails['ai-dev-assistant'];
+
+    if (modalTitle) modalTitle.textContent = data.title;
+    if (modalTagline) modalTagline.textContent = data.tagline;
+    if (modalCategory) modalCategory.textContent = data.category;
+    if (modalLanguage) modalLanguage.textContent = data.language;
+    if (modalStars) modalStars.textContent = data.stars;
+    if (modalArchitecture) modalArchitecture.textContent = data.architecture;
+    if (modalSnippet) modalSnippet.textContent = data.snippet;
+    if (modalGithubLink) modalGithubLink.href = data.link;
+
+    if (modalFeatures) {
+      modalFeatures.innerHTML = data.features.map((f: string) => `<li class="flex items-center gap-2">${f}</li>`).join('');
+    }
+
+    if (modal) {
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+    }
+  }
+
+  function closeModal() {
+    if (modal) {
+      modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+  }
+
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Attach modal trigger to project cards
+  document.querySelectorAll('.project-card').forEach((card) => {
+    card.addEventListener('click', (e) => {
+      // Don't open modal if clicking external link directly
+      const target = e.target as HTMLElement;
+      if (target.closest('a')) return;
+
+      const title = card.querySelector('h3')?.textContent?.toLowerCase().trim();
+      if (title?.includes('assistant')) openModal('ai-dev-assistant');
+      else if (title?.includes('commit')) openModal('auto-commit-bot');
+      else if (title?.includes('launchpad')) openModal('vibe-launchpad');
+      else if (title?.includes('smart')) openModal('smart-noted');
+    });
+  });
+</script>

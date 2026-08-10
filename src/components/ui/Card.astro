@@ -1,0 +1,20 @@
+---
+interface Props {
+  variant?: 'base' | 'elevated' | 'glass' | 'glow';
+  class?: string;
+  id?: string;
+}
+
+const { variant = 'glass', class: className = '', id } = Astro.props;
+
+const variantStyles = {
+  base: 'bg-[var(--surface)] border border-[var(--border-subtle)]',
+  elevated: 'bg-[var(--surface-elevated)] border border-[var(--border-default)] shadow-lg',
+  glass: 'glass-panel rounded-[var(--radius-xl)]',
+  glow: 'glass-panel-glow rounded-[var(--radius-xl)]'
+};
+---
+
+<div id={id} class:list={['p-6 transition-all duration-300', variantStyles[variant], className]}>
+  <slot />
+</div>

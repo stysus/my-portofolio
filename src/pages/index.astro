@@ -1,0 +1,117 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Container from '../components/layout/Container.astro';
+import HeroSection from '../components/portfolio/HeroSection.astro';
+import ProfileCard from '../components/portfolio/ProfileCard.astro';
+import FeaturedProjects from '../components/portfolio/FeaturedProjects.astro';
+import TechStack from '../components/portfolio/TechStack.astro';
+import ToolsAi from '../components/portfolio/ToolsAi.astro';
+import AiPromptBox from '../components/portfolio/AiPromptBox.astro';
+import RecentActivityFeed from '../components/portfolio/RecentActivityFeed.astro';
+import ProjectModal from '../components/portfolio/ProjectModal.astro';
+import CyberpunkBackground from '../components/ui/CyberpunkBackground.astro';
+---
+
+<MainLayout title="Vibe Coder | I Code the Vibe, AI Handles the Heavy">
+  <!-- Dynamic Cyberpunk Matrix Background Particles -->
+  <CyberpunkBackground />
+
+  <Header slot="header" />
+
+  <!-- Hero Banner -->
+  <HeroSection />
+
+  <!-- Main 3-Column Cyberpunk Portfolio Grid (Natural Content-Based Heights) -->
+  <section class="py-6 lg:py-10">
+    <Container size="lg">
+      <div class="dashboard-grid grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6">
+        
+        <!-- Left Column: Profile Card (3 Cols) — Height Anchor -->
+        <div class="lg:col-span-3 lg:row-span-1" id="profile-col">
+          <ProfileCard />
+        </div>
+
+        <!-- Middle Column: Featured Projects (6 Cols) -->
+        <div class="lg:col-span-6 lg:row-span-1 overflow-hidden" id="projects-col">
+          <FeaturedProjects />
+        </div>
+
+        <!-- Right Column: Tech Stack (3 Cols) -->
+        <div class="lg:col-span-3 lg:row-span-1 overflow-hidden" id="techstack-col">
+          <TechStack />
+        </div>
+
+      </div>
+
+      <script>
+        // Sync column heights: ProfileCard drives the row height
+        function syncDashboardHeight() {
+          const profileCol = document.getElementById('profile-col');
+          const projectsCol = document.getElementById('projects-col');
+          const techstackCol = document.getElementById('techstack-col');
+          if (!profileCol || !projectsCol || !techstackCol) return;
+          
+          // Only on desktop (lg breakpoint)
+          if (window.innerWidth < 1024) {
+            projectsCol.style.height = '';
+            techstackCol.style.height = '';
+            return;
+          }
+          
+          // Reset heights to measure natural profile height
+          projectsCol.style.height = '';
+          techstackCol.style.height = '';
+          
+          const profileH = Math.min(profileCol.offsetHeight, 520);
+          if (profileH > 0) {
+            projectsCol.style.height = profileH + 'px';
+            techstackCol.style.height = profileH + 'px';
+          }
+        }
+        
+        // Expose globally for tab switches
+        (window as any).syncDashboardHeight = syncDashboardHeight;
+
+        syncDashboardHeight();
+        window.addEventListener('resize', syncDashboardHeight);
+        window.addEventListener('load', syncDashboardHeight);
+        document.addEventListener('DOMContentLoaded', syncDashboardHeight);
+
+        // Real-time ResizeObserver on profileCol to keep exact baseline alignment when fonts/images load
+        const profileElem = document.getElementById('profile-col');
+        if (profileElem && typeof ResizeObserver !== 'undefined') {
+          const ro = new ResizeObserver(() => syncDashboardHeight());
+          ro.observe(profileElem);
+        }
+      </script>
+    </Container>
+  </section>
+
+  <!-- Full-Width Horizontal Tools & AI Workflow Suite Section -->
+  <section class="py-5">
+    <Container size="lg">
+      <ToolsAi />
+    </Container>
+  </section>
+
+  <!-- Live GitHub Recent Activity Feed Section -->
+  <section class="py-5">
+    <Container size="lg">
+      <RecentActivityFeed />
+    </Container>
+  </section>
+
+  <!-- Interactive AI Assistant Section -->
+  <section class="py-5">
+    <Container size="lg">
+      <AiPromptBox />
+    </Container>
+  </section>
+
+  <!-- Case Study Interactive Modal -->
+  <ProjectModal />
+
+  <Footer slot="footer" />
+</MainLayout>

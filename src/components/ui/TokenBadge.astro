@@ -1,0 +1,36 @@
+---
+import type { DesignTokenItem } from '../../types';
+
+interface Props {
+  token: DesignTokenItem;
+}
+
+const { token } = Astro.props;
+---
+
+<div class="glass-panel p-4 rounded-[var(--radius-lg)] hover:border-[var(--border-neon-primary)] transition-all duration-300 flex flex-col gap-2">
+  <div class="flex items-center justify-between">
+    <span class="text-xs font-mono font-medium text-[var(--text-bright)]">{token.name}</span>
+    <span class="text-[10px] font-mono px-2 py-0.5 rounded-[var(--radius-sm)] bg-[var(--surface-elevated)] text-[var(--secondary-neon)] border border-[var(--border-subtle)]">
+      {token.category}
+    </span>
+  </div>
+
+  <div class="flex items-center gap-3 mt-1">
+    <!-- Visual Token Swatch / Preview -->
+    <div 
+      class="w-8 h-8 rounded-[var(--radius-md)] border border-white/20 flex-shrink-0 shadow-inner flex items-center justify-center text-[10px] font-mono"
+      style={`background: var(${token.cssVariable}); box-shadow: var(${token.cssVariable});`}
+    >
+    </div>
+    
+    <div class="flex flex-col overflow-hidden">
+      <code class="text-xs text-[var(--primary-neon-bright)] font-mono truncate">{token.cssVariable}</code>
+      <span class="text-[11px] text-[var(--text-muted)] truncate">{token.value}</span>
+    </div>
+  </div>
+
+  <p class="text-[11px] text-[var(--text-secondary)] mt-1 line-clamp-2">
+    {token.description}
+  </p>
+</div>
